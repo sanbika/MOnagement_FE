@@ -118,35 +118,26 @@ select:focus {
 
 .notification {
   padding: 10px;
-  margin: 10px 0;
+  margin: 10px;
   border-radius: 4px;
-  /* Rounded corners for notifications */
   font-weight: bold;
   text-align: center;
-  position: absolute;
-  /* Position notification above the table */
-  top: 0;
+  position: fixed;
+  top: 10px;
   left: 50%;
-  transform: translateX(-50%);
-  max-width: 300px;
+  max-width: 300px; /* Limit the width */
 }
 
 .notification.success {
   background-color: #d4edda;
-  /* Green background for success */
   color: #155724;
-  /* Dark green text for success */
   border: 1px solid #c3e6cb;
-  /* Green border for success */
 }
 
-.notification.error {
+.notification.fail {
   background-color: #f8d7da;
-  /* Red background for error */
   color: #721c24;
-  /* Dark red text for error */
   border: 1px solid #f5c6cb;
-  /* Red border for error */
 }
 </style>
 
@@ -193,7 +184,7 @@ select:focus {
               <input type="checkbox" :value="item.id" v-model="selectedIds" />
             </td>
             <!-- Item name -->
-            <td>
+            <td @click="beforeUpdateItem(item.id, 'name')">
               <input
                 type="text"
                 v-model="item.name"
@@ -208,6 +199,7 @@ select:focus {
                 v-if="editingTypeItemId === item.id"
                 v-model="item.type.id"
                 @blur="updateItem(item.id, 'type', $event.target.value)"
+                @click.stop
               >
                 <option v-for="type in types" :value="type.id" :key="type.id">
                   {{ type.name }}
@@ -215,7 +207,7 @@ select:focus {
               </select>
             </td>
             <!-- Item Expiration Date -->
-            <td @click="beforeUpdateItem(item.id, 'date')">
+            <td @click="beforeUpdateItem(item.id, 'expirDate')">
               <span v-show="editingDateItemId !== item.id">{{ item.expirDate }}</span>
               <input
                 ref="dateTag"
@@ -226,7 +218,7 @@ select:focus {
               />
             </td>
             <!-- Item Quantity -->
-            <td>
+            <td @click="beforeUpdateItem(item.id, 'quantity')">
               <input
                 type="number"
                 v-model="item.quantity"
@@ -242,7 +234,7 @@ select:focus {
       <button class="remove-btn" @click="removeItems" v-if="hasSelectedItems">
         <i class="bi bi-trash-fill"></i>
       </button>
-      <button class="add-btn" @click="addItem"><i class="bi bi-plus"></i></button>
+      <button class="add-btn" @click="clickAddBtn"><i class="bi bi-plus"></i></button>
     </div>
     <!-- Add Item Modal -->
     <AddItemModal
@@ -268,33 +260,25 @@ let types = ref([])
 const selectedIds = ref([]) // selected checkboxes
 const selectAll = ref(false)
 
-const notificationMessage = ref('')
-const notificationType = ref('') // 'success' or 'error'
-
 // fetch data
 const getItems = async () => {
   items.value = await itemService.fetchItems()
 }
-
 const getExpireList = async () => {
   expireList.value = await itemService.getExpireItems(getDate())
 }
-
 const getTobuyList = async () => {
   toBuyList.value = await itemService.getToBuyItems(15)
 }
-
 const getTypes = async () => {
   types.value = await typeService.getTypes()
-  // console.log(types.value)
 }
 
-function getDate() {
-  const now = new Date(2024, 2, 12)
-  // const oneWeekAgo = new Date(now)
-  // oneWeekAgo.setDate(now.getDate() - 7)
-  // oneWeekAgo.setHours(0, 0, 0, 0)
+// get current date and transfer to required format
+const getDate = () => {
+  const now = new Date()
   const year = now.getFullYear()
+  // month start from 0 in JS
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const day = now.getDate()
 
@@ -307,23 +291,40 @@ const isModalVisible = ref(false)
 const hasSelectedItems = computed(() => selectedIds.value.length > 0)
 
 // Methods to handle button actions
-const addItem = () => {
+const clickAddBtn = () => {
   isModalVisible.value = true
 }
 
+// Create a new item
 const postAddItemRequest = async (item) => {
-  await itemService.createItem(item)
+  const status = await itemService.createItem(item)
   // update current page's data immediately
   getItems(), getExpireList(), getTobuyList()
+
+  // show notification
+  if (status === 200) {
+    showNotification('success', 'created successfully')
+  } else {
+    showNotification('fail', 'failed to create')
+  }
 }
 
+// Delete selected Items
 // 不能在async()里传入值，除非在上面@click调用时也指定传入的值，否则会被当成默认click event的传值
 const removeItems = async () => {
   const itemIds = selectedIds.value
-  await itemService.deleteItems(itemIds)
+  const status = await itemService.deleteItems(itemIds)
 
   // update current page's data immediately
   getItems(), getExpireList(), getTobuyList()
+
+  // show notification
+  console.log(status)
+  if (status === 200) {
+    showNotification('success', 'removed successfully')
+  } else {
+    showNotification('fail', 'failed to remove')
+  }
 }
 
 // update items
@@ -331,70 +332,68 @@ const selectTag = ref(null)
 const dateTag = ref(null)
 const editingTypeItemId = ref(null)
 const editingDateItemId = ref(null)
-
+let oldValue
+// create focus in select/input date html tag
+// (this is to ensure @blur works well, otherwise some style problem will be caused)
 const beforeUpdateItem = (itemId, field) => {
+  // record the old value before update
+  oldValue = items.value.filter((item) => item.id === itemId)[0][field]
+
   if (field === 'type') {
+    oldValue = oldValue.id // because item['type'] = {id:, name:,}, but only need to pass id to api
     editingTypeItemId.value = itemId
+    // nextTick is called after the DOM has updated
     nextTick(() => {
-      console.log(selectTag.value[0])
+      // selectTag.value is an array with only 1 element (if use v-show, the array will have the same length of items list)
       selectTag.value[0].focus()
     })
   }
-  if (field === 'date') {
+  if (field === 'expirDate') {
     editingDateItemId.value = itemId
     nextTick(() => {
-      dateTag.value[0].focus(() => {
-        console.log('focus')
-      })
+      dateTag.value[0].focus()
     })
   }
 }
 
 const updateItem = async (itemId, field, newValue) => {
-  await itemService.updateItem(itemId, {
-    [field]: newValue
-  })
+  if (oldValue != newValue) {
+    const status = await itemService.updateItem(itemId, {
+      [field]: newValue
+    })
+    // update current list
+    getItems(), getExpireList(), getTobuyList()
 
-  getItems(), getExpireList(), getTobuyList()
+    // show notification
+    if (status === 200) {
+      showNotification('success', `${field} update successfully`)
+    } else {
+      showNotification('fail', `failed to update ${field}`)
+    }
+  }
 
+  // cancel the selection style of a record
   editingTypeItemId.value = null
   editingDateItemId.value = null
+}
+
+// notification
+const notificationMessage = ref('')
+const notificationType = ref('') // 'success' or 'fail'
+
+const showNotification = (status, message) => {
+  notificationMessage.value = message
+  notificationType.value = status
+
+  // Hide notification after 2 seconds
+  setTimeout(() => {
+    notificationMessage.value = ''
+    notificationType.value = ''
+  }, 2000)
 }
 
 // mounted
 onMounted(() => {
   getItems(), getExpireList(), getTobuyList(), getTypes()
 })
-// Methods to get tobuy item list and almost expire item list
-// const toBuyList = computed(() => {
-//   return items.value.filter((item) => item.quantity < 2)
-// })
-
-// const expireList = computed(() => {
-//   // calculate the date that are 1 week ago
-// const now = new Date()
-// const oneWeekAgo = new Date(now)
-// oneWeekAgo.setDate(now.getDate() - 7)
-// oneWeekAgo.setHours(0, 0, 0, 0)
-
-//   // filter items based on the computed date
-//   const filterdItems = items.value.filter((item) => {
-//     const [year, month, day] = item.date.split('-').map(Number)
-//     // month start from 0 in date object
-//     const itemDate = new Date(year, month - 1, day)
-//     itemDate.setHours(0, 0, 0, 0)
-//     return itemDate <= oneWeekAgo
-//   })
-
-//   // sort the filtered items by date in ascending order
-//   return filterdItems.sort((a, b) => {
-//     const [yearA, monthA, dayA] = a.date.split('-').map(Number)
-//     const [yearB, monthB, dayB] = b.date.split('-').map(Number)
-
-//     const dateA = new Date(yearA, monthA - 1, dayA)
-//     const dateB = new Date(yearB, monthB - 1, dayB)
-
-//     return dateA - dateB
-//   })
-// })
 </script>

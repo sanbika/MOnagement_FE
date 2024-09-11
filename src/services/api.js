@@ -27,44 +27,37 @@ export const itemService = {
     }
   },
 
-  // Get an item
-  async getItemById(itemId) {
-    try {
-      const response = await itemAPI.get('/find', { params: { id: itemId } })
-      return response.data
-    } catch (error) {
-      throw new Error('Error fecthcing an item' + error.message)
-    }
-  },
+  // // Get an item
+  // async getItemById(itemId) {
+  //   try {
+  //     const response = await itemAPI.get('/find', { params: { id: itemId } })
+  //     return response.data
+  //   } catch (error) {
+  //     throw new Error('Error fecthcing an item' + error.message)
+  //   }
+  // },
 
   // Create an item
   async createItem(itemData) {
     try {
       const response = await itemAPI.post('/add', itemData)
-      if (response.status === 200) {
-        return true
-      } else {
-        throw new Error('Unexpected status code' + response.status)
-      }
+      return response.status
     } catch (error) {
-      throw new Error('Error creating item' + error.message)
+      return error.response.status
+      // throw new Error('Error creating item' + error.message)
     }
   },
 
   // Update an item
   async updateItem(itemId, updateData) {
     try {
-      console.log(itemId, updateData)
       const response = await itemAPI.patch('/update', updateData, {
         params: { id: itemId }
       })
-      if (response.status === 200) {
-        return true
-      } else {
-        throw new Error('Unexpected status code' + response.status)
-      }
+      return response.status
     } catch (error) {
-      throw new Error('Error updating an item' + error.message)
+      return error.response.status
+      // throw new Error('Error updating an item' + error.message)
     }
   },
 
@@ -88,13 +81,10 @@ export const itemService = {
   async deleteItems(itemIds) {
     try {
       const response = await itemAPI.delete('/delete/multiple', { data: { ids: itemIds } })
-      if (response.status === 200) {
-        return true
-      } else {
-        throw new Error('Unexpected status code' + response.status)
-      }
+      return response.status
     } catch (error) {
-      throw new Error('Error deleting an item' + error.message)
+      return error.response.status
+      // throw new Error('Error deleting an item' + error.message)
     }
   },
 
