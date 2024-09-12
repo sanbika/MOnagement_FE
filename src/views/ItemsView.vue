@@ -82,7 +82,8 @@ td {
 
 th {
   background-color: #f4f4f4;
-  border-bottom: 2px solid #ccc;
+  /* border-bottom: 2px solid #ccc; */
+  border-radius: 10px;
 }
 
 td {
@@ -139,6 +140,27 @@ select:focus {
   color: #721c24;
   border: 1px solid #f5c6cb;
 }
+
+.type-header-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.type-header-container > button {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  font-size: 15px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s;
+}
 </style>
 
 <template>
@@ -172,7 +194,14 @@ select:focus {
               <input type="checkbox" v-model="selectAll" @change="toggleAll" />
             </th>
             <th>Item</th>
-            <th>Type</th>
+            <th>
+              <div class="type-header-container">
+                <span>Type</span
+                ><button class="add-btn" @click.stop="clickAddTypeBtn">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+            </th>
             <th>Date</th>
             <th>Quantity</th>
           </tr>
@@ -243,6 +272,11 @@ select:focus {
       @postAddItemRequest="postAddItemRequest"
     >
     </AddItemModal>
+    <!-- Add Type Modal -->
+    <AddTypeModal
+      v-model:isVisible="isTypeModalVisible"
+      @postAddTypeRequest="postAddTypeRequest"
+    ></AddTypeModal>
   </div>
 </template>
 
@@ -251,11 +285,12 @@ import { ref, computed, onMounted, nextTick } from 'vue'
 import { itemService, typeService } from '@/services/api.js'
 import AddItemModal from '@/components/AddItemModal.vue'
 import SubListComponent from '@/components/SubListComponent.vue'
+import AddTypeModal from '@/components/AddTypeModal.vue'
 
-let items = ref([])
-let expireList = ref([])
-let toBuyList = ref([])
-let types = ref([])
+const items = ref([])
+const expireList = ref([])
+const toBuyList = ref([])
+const types = ref([])
 
 const selectedIds = ref([]) // selected checkboxes
 const selectAll = ref(false)
@@ -319,7 +354,6 @@ const removeItems = async () => {
   getItems(), getExpireList(), getTobuyList()
 
   // show notification
-  console.log(status)
   if (status === 200) {
     showNotification('success', 'removed successfully')
   } else {
@@ -392,6 +426,24 @@ const showNotification = (status, message) => {
   }, 2000)
 }
 
+// add type
+const isTypeModalVisible = ref(false)
+
+const clickAddTypeBtn = () => {
+  isTypeModalVisible.value = true
+}
+
+const postAddTypeRequest = async (type) => {
+  const status = await typeService.createType(type)
+  //update type list
+  getTypes()
+  // show notification
+  if (status === 200) {
+    showNotification('success', 'created a new type successfully')
+  } else {
+    showNotification('fail', 'failed to create a new type')
+  }
+}
 // mounted
 onMounted(() => {
   getItems(), getExpireList(), getTobuyList(), getTypes()

@@ -139,9 +139,11 @@ export const typeService = {
   // Create a type
   async createType(typeData) {
     try {
-      await typeAPI.post('/add', typeData)
+      const response = await typeAPI.post('/add', typeData)
+      return response.status
     } catch (error) {
-      throw new Error('Error creating this type' + error.message)
+      // throw new Error('Error creating this type' + error.message)
+      return error.response.status
     }
   },
 
