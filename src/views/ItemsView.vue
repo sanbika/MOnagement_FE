@@ -26,16 +26,6 @@
   caret-color: transparent;
 }
 
-/* .lists {
-  display: flex;
-  flex-direction: column;
-  margin: 20px;
-  width: 20vw;
-  height: 100vh;
-  gap: 5vh;
-  caret-color: transparent;
-} */
-
 .buttons > button {
   width: 50px;
   height: 50px;
@@ -169,22 +159,6 @@ select:focus {
     <div v-if="notificationMessage" :class="['notification', notificationType]">
       {{ notificationMessage }}
     </div>
-    <!-- Side Lists -->
-    <div class="lists">
-      <!-- Expire List -->
-      <SubListComponent
-        title="To Expire"
-        :items="expireList"
-        :display-value="(i) => i.expirDate"
-      ></SubListComponent>
-
-      <!-- To Buy List -->
-      <SubListComponent
-        title="To Buy"
-        :items="toBuyList"
-        :display-value="(i) => i.quantity"
-      ></SubListComponent>
-    </div>
     <!-- Display Table -->
     <div class="table">
       <table>
@@ -282,14 +256,12 @@ select:focus {
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { itemService, typeService } from '@/services/api.js'
+import { itemService, subTypeService } from '@/services/api.js'
 import AddItemModal from '@/components/AddItemModal.vue'
 // import SubListComponent from '@/components/SubListComponent.vue'
 import AddTypeModal from '@/components/AddTypeModal.vue'
 
 const items = ref([])
-// const expireList = ref([])
-// const toBuyList = ref([])
 const types = ref([])
 
 const selectedIds = ref([]) // selected checkboxes
@@ -297,28 +269,8 @@ const selectAll = ref(false)
 
 // fetch data
 const getItems = async () => {
-  items.value = await itemService.fetchItems()
+  items.value = await subTypeService.getSubTypes()
 }
-// const getExpireList = async () => {
-//   expireList.value = await itemService.getExpireItems(getDate())
-// }
-// const getTobuyList = async () => {
-//   toBuyList.value = await itemService.getToBuyItems(15)
-// }
-const getTypes = async () => {
-  types.value = await typeService.getTypes()
-}
-
-// // get current date and transfer to required format
-// const getDate = () => {
-//   const now = new Date()
-//   const year = now.getFullYear()
-//   // month start from 0 in JS
-//   const month = String(now.getMonth() + 1).padStart(2, '0')
-//   const day = now.getDate()
-
-//   return `${year}-${month}-${day}`
-// }
 
 const isModalVisible = ref(false)
 

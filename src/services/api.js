@@ -134,6 +134,16 @@ export const typeService = {
     }
   },
 
+  // Get types with sum of subtype and items quantities(used for types view)
+  async getTypesWithCount() {
+    try {
+      const response = await typeAPI.get('/count')
+      return response.data
+    } catch (error) {
+      throw new Error('Error fecthcing types' + error.message)
+    }
+  },
+
   // Get a single type by id
   async getType(typeId) {
     try {
@@ -171,9 +181,11 @@ export const typeService = {
   // Update a type
   async updateType(typeId, typeData) {
     try {
-      await typeAPI.patch('/update', typeData, { params: { id: typeId } })
+      const response = await typeAPI.patch('/update', typeData, { params: { id: typeId } })
+      return response.status
     } catch (error) {
-      throw new Error('Error updating this type' + error.message)
+      // throw new Error('Error updating this type' + error.message)
+      return error.status
     }
   }
 }
