@@ -16,26 +16,34 @@ const typeAPI = axios.create({
   }
 })
 
+const subTypeAPI = axios.create({
+  baseURL: baseURL + 'subtype',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
 export const itemService = {
   // Get all items
   async fetchItems() {
     try {
-      const response = await itemAPI.get()
+      // const response = await itemAPI.get()
+      const response = await subTypeAPI.get()
       return response.data
     } catch (error) {
       throw new Error('Error fecthcing items ' + error.message)
     }
   },
 
-  // // Get an item
-  // async getItemById(itemId) {
-  //   try {
-  //     const response = await itemAPI.get('/find', { params: { id: itemId } })
-  //     return response.data
-  //   } catch (error) {
-  //     throw new Error('Error fecthcing an item' + error.message)
-  //   }
-  // },
+  // Get an item
+  async getItemById(itemId) {
+    try {
+      const response = await itemAPI.get('/find', { params: { id: itemId } })
+      return response.data
+    } catch (error) {
+      throw new Error('Error fecthcing an item' + error.message)
+    }
+  },
 
   // Create an item
   async createItem(itemData) {
@@ -98,21 +106,21 @@ export const itemService = {
     } catch (error) {
       throw new Error('Error getting expire items' + error.message)
     }
-  },
-
-  // Get to buy items
-  async getToBuyItems(quantity) {
-    try {
-      const response = await itemAPI.get('/tobuy', {
-        params: {
-          quantity: quantity
-        }
-      })
-      return response.data
-    } catch (error) {
-      throw new Error('Error getting to-buy items' + error.message)
-    }
   }
+
+  // // Get to buy items
+  // async getToBuyItems(quantity) {
+  //   try {
+  //     const response = await itemAPI.get('/tobuy', {
+  //       params: {
+  //         quantity: quantity
+  //       }
+  //     })
+  //     return response.data
+  //   } catch (error) {
+  //     throw new Error('Error getting to-buy items' + error.message)
+  //   }
+  // }
 }
 
 export const typeService = {
@@ -129,7 +137,7 @@ export const typeService = {
   // Get a single type by id
   async getType(typeId) {
     try {
-      const response = await typeAPI.get({ params: { id: typeId } })
+      const response = await typeAPI.get('/find', { params: { id: typeId } })
       return response.data
     } catch (error) {
       throw new Error('Error fecthcing this type' + error.message)
@@ -148,7 +156,7 @@ export const typeService = {
   },
 
   // Delete a type
-  async deleteTyp(typeId) {
+  async deleteType(typeId) {
     try {
       await typeAPI.delete('/delete', {
         params: {
@@ -166,6 +174,79 @@ export const typeService = {
       await typeAPI.patch('/update', typeData, { params: { id: typeId } })
     } catch (error) {
       throw new Error('Error updating this type' + error.message)
+    }
+  }
+}
+
+export const subTypeService = {
+  // Get all subtypes
+  async getSubTypes() {
+    try {
+      const response = await subTypeAPI.get()
+      return response.data
+    } catch (error) {
+      throw new Error('Error fecthcing subtypes' + error.message)
+    }
+  },
+
+  // Get a single subtype by id
+  async getSubType(subTypeId) {
+    try {
+      const response = await subTypeAPI.get('/find', { params: { id: subTypeId } })
+      return response.data
+    } catch (error) {
+      throw new Error('Error fecthcing this subtype' + error.message)
+    }
+  },
+
+  // Get to-buy list
+  async getToBuyList(baseQty) {
+    try {
+      const response = await subTypeAPI.get('/tobuy', { params: { quantity: baseQty } })
+      return response.data
+    } catch (error) {
+      throw new Error('Error fecthcing to buy list' + error.message)
+    }
+  },
+
+  // Create a subtype
+  async createSubType(subTypeData) {
+    try {
+      const response = await subTypeAPI.post('/add', subTypeData)
+      return response.status
+    } catch (error) {
+      return error.response.status
+    }
+  },
+
+  // Delete a subtype
+  async deleteSubType(subTypeId) {
+    try {
+      await subTypeAPI.delete('/delete', {
+        params: {
+          id: subTypeId
+        }
+      })
+    } catch (error) {
+      return error.response.status
+    }
+  },
+
+  // Delete subtypes
+  async deleteSubTypes(subTypeIds) {
+    try {
+      await subTypeAPI.delete('/delete/multiple', { ids: subTypeIds })
+    } catch (error) {
+      return error.response.status
+    }
+  },
+
+  // Update a subtype
+  async updateType(subTypeId, subTypeData) {
+    try {
+      await subTypeAPI.patch('/update', subTypeData, { params: { id: subTypeId } })
+    } catch (error) {
+      return error.message.status
     }
   }
 }
