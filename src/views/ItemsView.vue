@@ -26,7 +26,7 @@
   caret-color: transparent;
 }
 
-.lists {
+/* .lists {
   display: flex;
   flex-direction: column;
   margin: 20px;
@@ -34,7 +34,7 @@
   height: 100vh;
   gap: 5vh;
   caret-color: transparent;
-}
+} */
 
 .buttons > button {
   width: 50px;
@@ -284,12 +284,12 @@ select:focus {
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { itemService, typeService } from '@/services/api.js'
 import AddItemModal from '@/components/AddItemModal.vue'
-import SubListComponent from '@/components/SubListComponent.vue'
+// import SubListComponent from '@/components/SubListComponent.vue'
 import AddTypeModal from '@/components/AddTypeModal.vue'
 
 const items = ref([])
-const expireList = ref([])
-const toBuyList = ref([])
+// const expireList = ref([])
+// const toBuyList = ref([])
 const types = ref([])
 
 const selectedIds = ref([]) // selected checkboxes
@@ -299,26 +299,26 @@ const selectAll = ref(false)
 const getItems = async () => {
   items.value = await itemService.fetchItems()
 }
-const getExpireList = async () => {
-  expireList.value = await itemService.getExpireItems(getDate())
-}
-const getTobuyList = async () => {
-  toBuyList.value = await itemService.getToBuyItems(15)
-}
+// const getExpireList = async () => {
+//   expireList.value = await itemService.getExpireItems(getDate())
+// }
+// const getTobuyList = async () => {
+//   toBuyList.value = await itemService.getToBuyItems(15)
+// }
 const getTypes = async () => {
   types.value = await typeService.getTypes()
 }
 
-// get current date and transfer to required format
-const getDate = () => {
-  const now = new Date()
-  const year = now.getFullYear()
-  // month start from 0 in JS
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = now.getDate()
+// // get current date and transfer to required format
+// const getDate = () => {
+//   const now = new Date()
+//   const year = now.getFullYear()
+//   // month start from 0 in JS
+//   const month = String(now.getMonth() + 1).padStart(2, '0')
+//   const day = now.getDate()
 
-  return `${year}-${month}-${day}`
-}
+//   return `${year}-${month}-${day}`
+// }
 
 const isModalVisible = ref(false)
 
@@ -334,7 +334,8 @@ const clickAddBtn = () => {
 const postAddItemRequest = async (item) => {
   const status = await itemService.createItem(item)
   // update current page's data immediately
-  getItems(), getExpireList(), getTobuyList()
+  getItems()
+  // , getExpireList(), getTobuyList()
 
   // show notification
   if (status === 200) {
@@ -351,7 +352,8 @@ const removeItems = async () => {
   const status = await itemService.deleteItems(itemIds)
 
   // update current page's data immediately
-  getItems(), getExpireList(), getTobuyList()
+  getItems()
+  // , getExpireList(), getTobuyList()
 
   // show notification
   if (status === 200) {
@@ -396,7 +398,8 @@ const updateItem = async (itemId, field, newValue) => {
       [field]: newValue
     })
     // update current list
-    getItems(), getExpireList(), getTobuyList()
+    getItems()
+    // , getExpireList(), getTobuyList()
 
     // show notification
     if (status === 200) {
@@ -446,6 +449,7 @@ const postAddTypeRequest = async (type) => {
 }
 // mounted
 onMounted(() => {
-  getItems(), getExpireList(), getTobuyList(), getTypes()
+  getItems(), getTypes()
+  // , getExpireList(), getTobuyList()
 })
 </script>

@@ -3,6 +3,11 @@
   max-height: 45%;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Ensure rounded corners are visible */
+  background-color: #2c2c34;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .header-container {
@@ -11,17 +16,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between; /* Ensures header and input are on opposite sides */
-  padding: 0 10px; /* Add padding for spacing */
-  background-color: #ddd; /* Optional: background color to match header */
+  padding: 0 1rem; /* Add padding for spacing */
+  background-color: #4f5061; /* Match the navbar color */
+  color: #ffffff;
   border-radius: 12px;
+  border-bottom: 2px solid #3c3d4a; /* Bottom border for emphasis */
   transition: background-color 0.3s;
 }
 
 .header-container:hover {
-  background-color: #d4d4d4;
+  background-color: #3c3d4a; /* Darker shade on hover */
 }
 
 .list-header {
+  font-size: 1.2rem;
   cursor: default;
 }
 
@@ -30,26 +38,30 @@
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  right: 2px;
+  background-color: #ffffff;
+  color: #333; /* Dark text color for input */
 }
 
 .list-content {
-  width: 100%;
   flex-grow: 1;
-  overflow: auto;
+  overflow: auto; /* Vertical scrolling for content */
 }
 
 .list-content > table {
   width: 100%;
+  border-collapse: collapse; /* Remove gaps between cells */
 }
 
-table td {
-  width: 33%;
-  align-content: left;
-}
-
-tr td:nth-of-type(3) {
+.list-content th,
+.list-content td {
+  padding: 0.75rem;
   text-align: center;
+  width: 30%;
+  color: #ddd;
+}
+
+.list-content th {
+  border-bottom: 1px solid; /* Light border for row separation */
 }
 </style>
 <template>
@@ -60,7 +72,7 @@ tr td:nth-of-type(3) {
         type="number"
         v-model.number="recordLimit"
         min="1"
-        :max="items.length"
+        :max="data.length"
         class="list-input"
         placeholder="Number of records"
         @click.stop
@@ -69,11 +81,20 @@ tr td:nth-of-type(3) {
 
     <div class="list-content" v-show="isVisible">
       <table>
-        <tr v-for="item in visibleItems" :key="item.id">
-          <td>{{ item.name }}</td>
-          <td>{{ item.type.name }}</td>
-          <td>{{ displayValue(item) }}</td>
-        </tr>
+        <!-- Dynamic headers -->
+        <thead>
+          <th v-for="(header, index) in headers" :key="index">
+            {{ header }}
+          </th>
+        </thead>
+        <!-- Dynamic rows -->
+        <tbody>
+          <tr v-for="record in visibleData" :key="record.id">
+            <td v-for="(displayFunction, index) in columns" :key="index">
+              {{ displayFunction(record) }}
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -84,13 +105,13 @@ import { ref, computed, watch } from 'vue'
 // Props from the ListComponent
 const props = defineProps({
   title: String,
-  items: Array,
-  displayValue: Function
+  headers: Array, //(e.g., ["Name", "Type", "Value"])
+  columns: Array, //(e.g., [(item) => item.name])
+  data: Array
 })
 
 // Reactive variable for list visibility
 const isVisible = ref(true)
-// const recordLimit = ref(props.items.length)
 const recordLimit = ref(1)
 
 // Method to toggle the list vibility
@@ -99,15 +120,15 @@ const toggleList = () => {
 }
 
 // Computed property for filtering items based on record limit
-const visibleItems = computed(() => {
+const visibleData = computed(() => {
   // Ensure recordLimit is within valid bounds
-  const limit = Math.max(1, Math.min(recordLimit.value, props.items.length))
-  return props.items.slice(0, limit)
+  const limit = Math.max(1, Math.min(recordLimit.value, props.data.length))
+  return props.data.slice(0, limit)
 })
 
 // Initialize recordLimit with a default value and watch for changes
 watch(
-  () => props.items.length,
+  () => props.data.length,
   (newLength) => {
     // Update recordLimit if items are provided and adjust accordingly
     if (recordLimit.value < newLength) {
@@ -116,10 +137,4 @@ watch(
   },
   { immediate: true }
 )
-// Initialize recordLimit correctly after data is fetched
-// onMounted(() => {
-//   if (props.items.length > 0) {
-//     recordLimit.value = props.items.length
-//   }
-// })
 </script>

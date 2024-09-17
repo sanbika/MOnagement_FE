@@ -200,7 +200,7 @@ export const subTypeService = {
   },
 
   // Get to-buy list
-  async getToBuyList(baseQty) {
+  async getToBuySubTypes(baseQty) {
     try {
       const response = await subTypeAPI.get('/tobuy', { params: { quantity: baseQty } })
       return response.data
