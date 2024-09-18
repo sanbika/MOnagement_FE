@@ -25,10 +25,9 @@ const subTypeAPI = axios.create({
 
 export const itemService = {
   // Get all items
-  async fetchItems() {
+  async getItems() {
     try {
-      // const response = await itemAPI.get()
-      const response = await subTypeAPI.get()
+      const response = await itemAPI.get()
       return response.data
     } catch (error) {
       throw new Error('Error fecthcing items ' + error.message)

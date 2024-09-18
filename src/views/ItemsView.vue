@@ -1,16 +1,152 @@
 <style scoped>
+.table-container {
+  width: 50%;
+  margin: 2rem;
+  padding: 1rem;
+  background-color: transparent;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  caret-color: transparent;
+}
+
+th,
+td {
+  padding: 12px 16px;
+  text-align: center;
+  color: white;
+  border-bottom: 1px solid white;
+}
+
+th {
+  font-weight: bold;
+}
+
+td input {
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  text-align: center;
+  padding: 4px;
+  color: white;
+  caret-color: #3c3d4a;
+}
+
+tr>td:first-child>input {
+  width: auto;
+  padding: 0;
+}
+
+td input:focus {
+  outline: none;
+  border-bottom: 1px solid #3c3d4a;
+}
+
+tr:hover,
+tr.focused {
+  background-color: white;
+  transition: background-color 0.3s;
+}
+
+tr:hover *,
+tr.focused * {
+  color: #3c3d4a;
+}
+
+tr:hover .header-btn>i,
+tr.focused .header-btn>i {
+  color: white;
+}
+
+.notification {
+  padding: 10px;
+  margin: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  max-width: 300px;
+  /* Limit the width */
+}
+
+.notification.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.notification.fail {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Below are different from typesview */
+select {
+  background-color: transparent;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  border: none;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 4px;
+  color: white;
+  appearance: none;
+  text-align: center;
+}
+
+option {
+  color: #3c3d4a;
+  /* Option text color after clicking */
+  background-color: white;
+  /* Optional: Background color for options */
+}
+
+select:focus {
+  outline: none;
+  border-bottom: 1px solid #3c3d4a;
+  color: #3c3d4a;
+}
+
+/* DIfferent parts with subtype view */
 .container {
   display: flex;
   flex-direction: row;
 }
 
-.table {
-  flex: 1;
-  width: 70vw;
-  margin: 20px;
+/* Buttons */
+.type-header-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  gap: 10px;
+  position: relative;
+}
+
+.header-btn {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  font-size: 15px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s;
+  position: absolute;
+  right: 0;
+  top: -2px;
 }
 
 .buttons {
@@ -26,7 +162,7 @@
   caret-color: transparent;
 }
 
-.buttons > button {
+.buttons>button {
   width: 50px;
   height: 50px;
   border: none;
@@ -42,11 +178,11 @@
 }
 
 .add-btn {
-  background-color: green;
+  background-color: #2c2c34;
 }
 
 .add-btn:hover {
-  background-color: darkgreen;
+  background-color: #53535f;
 }
 
 .remove-btn {
@@ -55,101 +191,6 @@
 
 .remove-btn:hover {
   background-color: darkred;
-}
-
-table {
-  border-collapse: collapse;
-  width: 70%;
-  font-family: Arial, sans-serif;
-  caret-color: transparent;
-}
-
-th,
-td {
-  padding: 8px;
-  text-align: center;
-}
-
-th {
-  background-color: #f4f4f4;
-  /* border-bottom: 2px solid #ccc; */
-  border-radius: 10px;
-}
-
-td {
-  background-color: #fff;
-  caret-color: darkslategray;
-}
-
-select {
-  background-color: #fff;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-
-input,
-select {
-  width: 100%;
-  height: 100%;
-  border: none;
-  box-sizing: border-box;
-  padding: 4px;
-  text-align: center;
-  font: inherit;
-}
-
-input:focus,
-select:focus {
-  outline: none;
-  /* background-color: #f4f4f4; */
-  width: 100%;
-  height: 100%;
-  border-bottom: 1px solid green;
-}
-
-.notification {
-  padding: 10px;
-  margin: 10px;
-  border-radius: 4px;
-  font-weight: bold;
-  text-align: center;
-  position: fixed;
-  top: 10px;
-  left: 50%;
-  max-width: 300px; /* Limit the width */
-}
-
-.notification.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.notification.fail {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-.type-header-container {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.type-header-container > button {
-  width: 20px;
-  height: 20px;
-  border: none;
-  border-radius: 50%;
-  font-size: 15px;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 0.3s;
 }
 </style>
 
@@ -160,23 +201,23 @@ select:focus {
       {{ notificationMessage }}
     </div>
     <!-- Display Table -->
-    <div class="table">
+    <div class="table-container">
       <table>
         <thead>
           <tr>
             <th>
-              <input type="checkbox" v-model="selectAll" @change="toggleAll" />
+              <input type="checkbox" v-model="selectAll" />
             </th>
             <th>Item</th>
             <th>
               <div class="type-header-container">
-                <span>Type</span
-                ><button class="add-btn" @click.stop="clickAddTypeBtn">
+                <span>Subtype</span>
+                <button class="add-btn header-btn" @click.stop="clickAddTypeBtn">
                   <i class="bi bi-plus"></i>
                 </button>
               </div>
             </th>
-            <th>Date</th>
+            <th>Exp. Date</th>
             <th>Quantity</th>
           </tr>
         </thead>
@@ -187,46 +228,26 @@ select:focus {
               <input type="checkbox" :value="item.id" v-model="selectedIds" />
             </td>
             <!-- Item name -->
-            <td @click="beforeUpdateItem(item.id, 'name')">
-              <input
-                type="text"
-                v-model="item.name"
-                @blur="updateItem(item.id, 'name', item.name)"
-              />
+            <td @click="beforeUpdate(item.id, 'name')">
+              <input type="text" v-model="item.name" @blur="update(item.id, 'name', item.name)" />
             </td>
-            <!-- Item type -->
-            <td @click="beforeUpdateItem(item.id, 'type')">
-              <span v-show="editingTypeItemId !== item.id">{{ item.type.name }}</span>
-              <select
-                ref="selectTag"
-                v-if="editingTypeItemId === item.id"
-                v-model="item.type.id"
-                @blur="updateItem(item.id, 'type', $event.target.value)"
-                @click.stop
-              >
-                <option v-for="type in types" :value="type.id" :key="type.id">
-                  {{ type.name }}
+            <!-- Item subtype -->
+            <td @click="beforeUpdate(item.id, 'sub_type_id')">
+              <select v-model="item.subType.id" @change="update(item.id, 'sub_type_id', $event.target.value)">
+                <option v-for="subType in subTypes" :value="subType.id" :key="subType.id">
+                  {{ subType.name }}
                 </option>
               </select>
             </td>
             <!-- Item Expiration Date -->
-            <td @click="beforeUpdateItem(item.id, 'expirDate')">
-              <span v-show="editingDateItemId !== item.id">{{ item.expirDate }}</span>
-              <input
-                ref="dateTag"
-                v-if="editingDateItemId === item.id"
-                type="date"
-                v-model="item.expirDate"
-                @blur="updateItem(item.id, 'expirDate', $event.target.value)"
-              />
+            <td @click="beforeUpdate(item.id, 'expiryDate')">
+              <span v-show="editingDateItemId !== item.id">{{ item.expiryDate }}</span>
+              <input ref="dateTag" v-if="editingDateItemId === item.id" type="date" v-model="item.expirDate"
+                @blur="update(item.id, 'expiryDate', $event.target.value)" />
             </td>
             <!-- Item Quantity -->
-            <td @click="beforeUpdateItem(item.id, 'quantity')">
-              <input
-                type="number"
-                v-model="item.quantity"
-                @blur="updateItem(item.id, 'quantity', item.quantity)"
-              />
+            <td @click="beforeUpdate(item.id, 'quantity')">
+              <input type="number" v-model="item.quantity" @blur="update(item.id, 'quantity', item.quantity)" />
             </td>
           </tr>
         </tbody>
@@ -240,49 +261,55 @@ select:focus {
       <button class="add-btn" @click="clickAddBtn"><i class="bi bi-plus"></i></button>
     </div>
     <!-- Add Item Modal -->
-    <AddItemModal
-      v-model:isVisible="isModalVisible"
-      :types="types"
-      @postAddItemRequest="postAddItemRequest"
-    >
+    <AddItemModal v-model:isVisible="isModalVisible" :types="subTypes" @postAddItemRequest="postAddItemRequest">
     </AddItemModal>
     <!-- Add Type Modal -->
-    <AddTypeModal
-      v-model:isVisible="isTypeModalVisible"
-      @postAddTypeRequest="postAddTypeRequest"
-    ></AddTypeModal>
+    <!-- <AddTypeModal v-model:isVisible="isTypeModalVisible" @postAddTypeRequest="postAddTypeRequest"></AddTypeModal> -->
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { itemService, subTypeService } from '@/services/api.js'
 import AddItemModal from '@/components/AddItemModal.vue'
-// import SubListComponent from '@/components/SubListComponent.vue'
-import AddTypeModal from '@/components/AddTypeModal.vue'
+// import AddTypeModal from '@/components/AddTypeModal.vue'
 
 const items = ref([])
-const types = ref([])
+const subTypes = ref([])
 
+// checkboxs
 const selectedIds = ref([]) // selected checkboxes
 const selectAll = ref(false)
 
+// process toggleAll when checkbox on table head is changed
+watch(selectAll, (value) => {
+  if (value) {
+    selectedIds.value = items.value.map((i) => i.id)
+  } else {
+    selectedIds.value = []
+  }
+})
+
 // fetch data
 const getItems = async () => {
-  items.value = await subTypeService.getSubTypes()
+  items.value = await itemService.getItems()
+  // console.log('fetched items ', items.value)
 }
 
-const isModalVisible = ref(false)
+const getSubTypes = async () => {
+  subTypes.value = await subTypeService.getSubTypes()
+  // console.log('fetched subTypes ', subTypes.value)
+}
 
-// Computed property to check if there are selected items
-const hasSelectedItems = computed(() => selectedIds.value.length > 0)
+// Create a new item
+// modal
+const isModalVisible = ref(false)
 
 // Methods to handle button actions
 const clickAddBtn = () => {
   isModalVisible.value = true
 }
 
-// Create a new item
 const postAddItemRequest = async (item) => {
   const status = await itemService.createItem(item)
   // update current page's data immediately
@@ -299,13 +326,17 @@ const postAddItemRequest = async (item) => {
 
 // Delete selected Items
 // 不能在async()里传入值，除非在上面@click调用时也指定传入的值，否则会被当成默认click event的传值
+
+// Computed property to check if there are selected items
+const hasSelectedItems = computed(() => selectedIds.value.length > 0)
+
 const removeItems = async () => {
   const itemIds = selectedIds.value
   const status = await itemService.deleteItems(itemIds)
 
   // update current page's data immediately
   getItems()
-  // , getExpireList(), getTobuyList()
+  selectedIds.value = []
 
   // show notification
   if (status === 200) {
@@ -316,42 +347,32 @@ const removeItems = async () => {
 }
 
 // update items
-const selectTag = ref(null)
 const dateTag = ref(null)
 const editingTypeItemId = ref(null)
 const editingDateItemId = ref(null)
 let oldValue
 // create focus in select/input date html tag
 // (this is to ensure @blur works well, otherwise some style problem will be caused)
-const beforeUpdateItem = (itemId, field) => {
+const beforeUpdate = (itemId, field) => {
   // record the old value before update
   oldValue = items.value.filter((item) => item.id === itemId)[0][field]
-
-  if (field === 'type') {
-    oldValue = oldValue.id // because item['type'] = {id:, name:,}, but only need to pass id to api
-    editingTypeItemId.value = itemId
-    // nextTick is called after the DOM has updated
-    nextTick(() => {
-      // selectTag.value is an array with only 1 element (if use v-show, the array will have the same length of items list)
-      selectTag.value[0].focus()
-    })
-  }
-  if (field === 'expirDate') {
+  oldValue = oldValue.id // because item['type'] = {id:, name:,}, but only need to pass id to api
+  if (field === 'expiryDate') {
     editingDateItemId.value = itemId
+    // selectTag.value is an array with only 1 element (if use v-show, the array will have the same length of items list)
     nextTick(() => {
       dateTag.value[0].focus()
     })
   }
 }
 
-const updateItem = async (itemId, field, newValue) => {
+const update = async (itemId, field, newValue) => {
   if (oldValue != newValue) {
     const status = await itemService.updateItem(itemId, {
       [field]: newValue
     })
     // update current list
     getItems()
-    // , getExpireList(), getTobuyList()
 
     // show notification
     if (status === 200) {
@@ -381,27 +402,8 @@ const showNotification = (status, message) => {
   }, 2000)
 }
 
-// add type
-const isTypeModalVisible = ref(false)
-
-const clickAddTypeBtn = () => {
-  isTypeModalVisible.value = true
-}
-
-const postAddTypeRequest = async (type) => {
-  const status = await typeService.createType(type)
-  //update type list
-  getTypes()
-  // show notification
-  if (status === 200) {
-    showNotification('success', 'created a new type successfully')
-  } else {
-    showNotification('fail', 'failed to create a new type')
-  }
-}
 // mounted
 onMounted(() => {
-  getItems(), getTypes()
-  // , getExpireList(), getTobuyList()
+  getItems(), getSubTypes()
 })
 </script>
