@@ -13,6 +13,12 @@ const router = createRouter({
       path: '/types',
       name: 'types',
       component: () => import('@/views/TypesVIew.vue')
+    },
+
+    {
+      path: '/subtypes',
+      name: 'subtypes',
+      component: () => import('@/views/SubTypesView.vue')
     }
   ]
 })

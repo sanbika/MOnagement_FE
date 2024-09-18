@@ -85,6 +85,36 @@ tr.focused * {
   color: #721c24;
   border: 1px solid #f5c6cb;
 }
+
+/* Below are different from typesview */
+select {
+  background-color: transparent;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  border: none;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 4px;
+  color: white;
+  appearance: none;
+}
+
+option {
+  color: #3c3d4a; /* Option text color after clicking */
+  background-color: white; /* Optional: Background color for options */
+}
+
+select:focus {
+  outline: none;
+  border-bottom: 1px solid #3c3d4a;
+  color: #3c3d4a;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  text-align: left;
+}
 </style>
 <template>
   <div class="table-container">
@@ -96,18 +126,35 @@ tr.focused * {
     <table>
       <thead>
         <tr>
-          <th>Type</th>
-          <th># of Subtypes</th>
+          <th>Subtype</th>
+          <th>Belong to</th>
           <th># of Items</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="type in types" :key="type.id" :class="{ focused: focusStatus === type.id }">
-          <td @click="beforeUpdate(type.id, 'name')">
-            <input type="text" v-model="type.name" @blur="update(type.id, 'name', type.name)" />
+        <tr
+          v-for="subtype in subtypes"
+          :key="subtype.id"
+          :class="{ focused: focusStatus === subtype.id }"
+        >
+          <td @click="beforeUpdate(subtype.id, 'name')">
+            <input
+              type="text"
+              v-model="subtype.name"
+              @blur="update(subtype.id, 'name', subtype.name)"
+            />
           </td>
-          <td>{{ type.sumSubTypesQuantity }}</td>
-          <td>{{ type.sumItemsQuantity }}</td>
+          <td @click="beforeUpdate(subtype.id, 'type_id')">
+            <select
+              v-model="subtype.type_id"
+              @change="update(subtype.id, 'type_id', $event.target.value)"
+            >
+              <option v-for="type in types" :value="type.id" :key="type.id">
+                {{ type.name }}
+              </option>
+            </select>
+          </td>
+          <td>{{ subtype.sumItemsQuantity }}</td>
         </tr>
       </tbody>
     </table>
@@ -115,14 +162,20 @@ tr.focused * {
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
-import { typeService } from '@/services/api.js'
+import { subTypeService, typeService } from '@/services/api.js'
 
 // get data
+const subtypes = ref([])
 const types = ref([])
+
+const getSubTypes = async () => {
+  subtypes.value = await subTypeService.getSubTypesWithCount()
+  // console.log('fetched subtypes', subtypes.value)
+}
 
 const getTypes = async () => {
   types.value = await typeService.getTypesWithCount()
-  // console.log(types.value)
+  // console.log('types', types.value)
 }
 
 // updates
@@ -130,18 +183,22 @@ let oldValue
 const focusStatus = ref('') // td focus styles
 
 const beforeUpdate = (id, field) => {
-  oldValue = types.value.filter((type) => type.id === id)[0][field]
+  console.log('id is ', id, 'field is ', field)
+  oldValue = subtypes.value.filter((type) => type.id === id)[0][field]
+  console.log('old Value is ', oldValue)
   focusStatus.value = id
 }
 
 const update = async (id, field, newValue) => {
+  console.log('in update')
   if (oldValue != newValue) {
-    const status = await typeService.updateType(id, {
+    console.log('invoke api')
+    const status = await subTypeService.updateSubType(id, {
       [field]: newValue
     })
 
     // update current list
-    getTypes()
+    getSubTypes()
 
     // show notification
     if (status === 200) {
@@ -170,6 +227,6 @@ const showNotification = (status, message) => {
 }
 // mounted
 onMounted(() => {
-  getTypes()
+  getSubTypes(), getTypes()
 })
 </script>

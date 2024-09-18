@@ -201,6 +201,16 @@ export const subTypeService = {
     }
   },
 
+  // Get subtypes with type_id, sum of items quantities(used for subtypes view)
+  async getSubTypesWithCount() {
+    try {
+      const response = await subTypeAPI.get('/count')
+      return response.data
+    } catch (error) {
+      throw new Error('Error fecthcing subtypes with type_id and item qty' + error.message)
+    }
+  },
+
   // Get a single subtype by id
   async getSubType(subTypeId) {
     try {
@@ -254,9 +264,10 @@ export const subTypeService = {
   },
 
   // Update a subtype
-  async updateType(subTypeId, subTypeData) {
+  async updateSubType(subTypeId, subTypeData) {
     try {
-      await subTypeAPI.patch('/update', subTypeData, { params: { id: subTypeId } })
+      const response = await subTypeAPI.patch('/update', subTypeData, { params: { id: subTypeId } })
+      return response.status
     } catch (error) {
       return error.message.status
     }
