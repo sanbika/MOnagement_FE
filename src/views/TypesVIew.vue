@@ -19,7 +19,7 @@ table {
 th,
 td {
   padding: 12px 16px;
-  text-align: left;
+  text-align: center;
   color: white;
   border-bottom: 1px solid white;
 }
@@ -32,7 +32,7 @@ td input {
   background-color: transparent;
   border: none;
   width: 100%;
-  text-align: left;
+  text-align: center;
   padding: 4px;
   color: white;
   caret-color: #3c3d4a;
@@ -41,13 +41,6 @@ td input {
 td input:focus {
   outline: none;
   border-bottom: 1px solid #3c3d4a;
-}
-
-th:nth-child(2),
-th:nth-child(3),
-td:nth-child(2),
-td:nth-child(3) {
-  text-align: center;
 }
 
 tr:hover,

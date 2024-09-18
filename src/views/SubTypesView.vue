@@ -19,7 +19,7 @@ table {
 th,
 td {
   padding: 12px 16px;
-  text-align: left;
+  text-align: center;
   color: white;
   border-bottom: 1px solid white;
 }
@@ -32,7 +32,7 @@ td input {
   background-color: transparent;
   border: none;
   width: 100%;
-  text-align: left;
+  text-align: center;
   padding: 4px;
   color: white;
   caret-color: #3c3d4a;
@@ -41,13 +41,6 @@ td input {
 td input:focus {
   outline: none;
   border-bottom: 1px solid #3c3d4a;
-}
-
-th:nth-child(2),
-th:nth-child(3),
-td:nth-child(2),
-td:nth-child(3) {
-  text-align: center;
 }
 
 tr:hover,
@@ -70,7 +63,8 @@ tr.focused * {
   position: fixed;
   top: 10px;
   left: 50%;
-  max-width: 300px; /* Limit the width */
+  max-width: 300px;
+  /* Limit the width */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -88,6 +82,7 @@ tr.focused * {
 
 /* Below are different from typesview */
 select {
+  text-align: center;
   background-color: transparent;
   border-radius: 4px;
   border: 1px solid #ddd;
@@ -101,19 +96,16 @@ select {
 }
 
 option {
-  color: #3c3d4a; /* Option text color after clicking */
-  background-color: white; /* Optional: Background color for options */
+  color: #3c3d4a;
+  /* Option text color after clicking */
+  background-color: white;
+  /* Optional: Background color for options */
 }
 
 select:focus {
   outline: none;
   border-bottom: 1px solid #3c3d4a;
   color: #3c3d4a;
-}
-
-th:nth-child(2),
-td:nth-child(2) {
-  text-align: left;
 }
 </style>
 <template>
@@ -132,23 +124,12 @@ td:nth-child(2) {
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="subtype in subtypes"
-          :key="subtype.id"
-          :class="{ focused: focusStatus === subtype.id }"
-        >
+        <tr v-for="subtype in subtypes" :key="subtype.id" :class="{ focused: focusStatus === subtype.id }">
           <td @click="beforeUpdate(subtype.id, 'name')">
-            <input
-              type="text"
-              v-model="subtype.name"
-              @blur="update(subtype.id, 'name', subtype.name)"
-            />
+            <input type="text" v-model="subtype.name" @blur="update(subtype.id, 'name', subtype.name)" />
           </td>
           <td @click="beforeUpdate(subtype.id, 'type_id')">
-            <select
-              v-model="subtype.type_id"
-              @change="update(subtype.id, 'type_id', $event.target.value)"
-            >
+            <select v-model="subtype.type_id" @change="update(subtype.id, 'type_id', $event.target.value)">
               <option v-for="type in types" :value="type.id" :key="type.id">
                 {{ type.name }}
               </option>

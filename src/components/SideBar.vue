@@ -57,7 +57,7 @@ const getExpireList = async () => {
 }
 const getTobuyList = async () => {
   const result = await subTypeService.getToBuySubTypes(30)
-  console.log('result', result)
+  // console.log('result', result)
   toBuyList.value = result
 }
 
