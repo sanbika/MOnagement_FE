@@ -17,7 +17,7 @@
   font-size: 24px;
 }
 
-.nav-links a {
+a {
   color: white;
   text-decoration: none;
   padding-bottom: 0.2rem;
@@ -25,8 +25,9 @@
   transition: border-bottom 0.3s ease;
 }
 
-.nav-links a:focus,
-.nav-links a:hover {
+a:focus,
+a:hover,
+.activated {
   border-bottom: 2px solid white;
 }
 </style>
@@ -34,13 +35,13 @@
   <div class="navbar-container">
     <ul class="nav-links">
       <li>
-        <router-link to="/types">Types</router-link>
+        <router-link to="/types" active-class="activated">Types</router-link>
       </li>
       <li>
-        <router-link to="/subtypes">Subtypes</router-link>
+        <router-link to="/subtypes" active-class="activated">Subtypes</router-link>
       </li>
       <li>
-        <router-link to="/items">Items</router-link>
+        <router-link to="/items" active-class="activated">Items</router-link>
       </li>
     </ul>
   </div>
