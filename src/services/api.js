@@ -176,6 +176,19 @@ export const typeService = {
       throw new Error('Error deleting this type' + error.message)
     }
   },
+  // Delete types
+  async deleteTypes(typeIds) {
+    try {
+      const response = await typeAPI.delete('/delete/multiple', {
+        data: {
+          ids: typeIds
+        }
+      })
+      return response.status
+    } catch (error) {
+      return error.response.status
+    }
+  },
 
   // Update a type
   async updateType(typeId, typeData) {
@@ -256,7 +269,9 @@ export const subTypeService = {
   // Delete subtypes
   async deleteSubTypes(subTypeIds) {
     try {
-      await subTypeAPI.delete('/delete/multiple', { ids: subTypeIds })
+      console.log('api', subTypeIds)
+      const response = await subTypeAPI.delete('/delete/multiple', { data: { ids: subTypeIds } })
+      return response.status
     } catch (error) {
       return error.response.status
     }

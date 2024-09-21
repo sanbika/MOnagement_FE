@@ -1,196 +1,5 @@
 <style scoped>
-.container {
-  display: flex;
-  flex-direction: row;
-}
-
-.table-container {
-  width: 50%;
-  margin: 2rem;
-  padding: 1rem;
-  background-color: transparent;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-family: Arial, sans-serif;
-  font-size: 0.9rem;
-  caret-color: transparent;
-}
-
-th,
-td {
-  padding: 12px 16px;
-  text-align: center;
-  color: white;
-  border-bottom: 1px solid white;
-}
-
-th {
-  font-weight: bold;
-}
-
-td input {
-  background-color: transparent;
-  border: none;
-  width: 100%;
-  text-align: center;
-  padding: 4px;
-  color: white;
-  caret-color: #3c3d4a;
-}
-
-tr>td:first-child>input {
-  width: auto;
-  padding: 0;
-}
-
-td input:focus {
-  outline: none;
-  border-bottom: 1px solid #3c3d4a;
-}
-
-tr:hover,
-tr.focused {
-  background-color: white;
-  transition: background-color 0.3s;
-}
-
-tr:hover *,
-tr.focused * {
-  color: #3c3d4a;
-}
-
-tr:hover .header-btn>i,
-tr.focused .header-btn>i {
-  color: white;
-}
-
-.notification {
-  padding: 10px;
-  margin: 10px;
-  border-radius: 4px;
-  font-weight: bold;
-  text-align: center;
-  position: fixed;
-  top: 10px;
-  left: 50%;
-  max-width: 300px;
-  /* Limit the width */
-}
-
-.notification.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.notification.fail {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-/* Select and Options */
-select {
-  background-color: transparent;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  border: none;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 4px;
-  color: white;
-  appearance: none;
-  text-align: center;
-}
-
-option {
-  color: #3c3d4a;
-  /* Option text color after clicking */
-  background-color: white;
-  /* Optional: Background color for options */
-}
-
-select:focus {
-  outline: none;
-  border-bottom: 1px solid #3c3d4a;
-  color: #3c3d4a;
-}
-
-/* Buttons */
-.type-header-container {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  position: relative;
-}
-
-.header-btn {
-  width: 20px;
-  height: 20px;
-  border: none;
-  border-radius: 50%;
-  font-size: 15px;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 0.3s;
-  position: absolute;
-  right: 0;
-  top: -2px;
-}
-
-.buttons {
-  position: fixed;
-  bottom: 30px;
-  /* distance to the parent box, 30px far from the bottom */
-  right: 30px;
-  /* distance to the parent box, 30px far from the bottom */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  /* distance between items in this container */
-  caret-color: transparent;
-}
-
-.buttons>button {
-  width: 50px;
-  height: 50px;
-  border: none;
-  border-radius: 50%;
-  font-size: 24px;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 0.3s;
-}
-
-.add-btn {
-  background-color: #2c2c34;
-}
-
-.add-btn:hover {
-  background-color: #53535f;
-}
-
-.remove-btn {
-  background-color: red;
-}
-
-.remove-btn:hover {
-  background-color: darkred;
-}
+@import url(../assets/tableView.css);
 </style>
 
 <template>
@@ -276,18 +85,6 @@ import AddItemModal from '@/components/AddItemModal.vue'
 const items = ref([])
 const subTypes = ref([])
 
-// checkboxs
-const selectedIds = ref([]) // selected checkboxes
-const selectAll = ref(false)
-
-// process toggleAll when checkbox on table head is changed
-watch(selectAll, (value) => {
-  if (value) {
-    selectedIds.value = items.value.map((i) => i.id)
-  } else {
-    selectedIds.value = []
-  }
-})
 
 // fetch data
 const getItems = async () => {
@@ -325,7 +122,18 @@ const postAddItemRequest = async (item) => {
 
 // Delete selected Items
 // 不能在async()里传入值，除非在上面@click调用时也指定传入的值，否则会被当成默认click event的传值
+// checkboxs
+const selectedIds = ref([]) // selected checkboxes
+const selectAll = ref(false)
 
+// process toggleAll when checkbox on table head is changed
+watch(selectAll, (value) => {
+  if (value) {
+    selectedIds.value = items.value.map((i) => i.id)
+  } else {
+    selectedIds.value = []
+  }
+})
 // Computed property to check if there are selected items
 const hasSelectedItems = computed(() => selectedIds.value.length > 0)
 
