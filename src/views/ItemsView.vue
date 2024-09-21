@@ -1,4 +1,9 @@
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
 .table-container {
   width: 50%;
   margin: 2rem;
@@ -89,7 +94,7 @@ tr.focused .header-btn>i {
   border: 1px solid #f5c6cb;
 }
 
-/* Below are different from typesview */
+/* Select and Options */
 select {
   background-color: transparent;
   border-radius: 4px;
@@ -115,12 +120,6 @@ select:focus {
   outline: none;
   border-bottom: 1px solid #3c3d4a;
   color: #3c3d4a;
-}
-
-/* DIfferent parts with subtype view */
-.container {
-  display: flex;
-  flex-direction: row;
 }
 
 /* Buttons */
@@ -272,7 +271,7 @@ select:focus {
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { itemService, subTypeService } from '@/services/api.js'
 import AddItemModal from '@/components/AddItemModal.vue'
-// import AddTypeModal from '@/components/AddTypeModal.vue'
+
 
 const items = ref([])
 const subTypes = ref([])

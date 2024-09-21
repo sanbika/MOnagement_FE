@@ -1,4 +1,9 @@
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
 .table-container {
   width: 50%;
   margin: 2rem;
@@ -54,6 +59,7 @@ tr.focused * {
   color: #3c3d4a;
 }
 
+/* Notification */
 .notification {
   padding: 10px;
   margin: 10px;
@@ -63,7 +69,8 @@ tr.focused * {
   position: fixed;
   top: 10px;
   left: 50%;
-  max-width: 300px; /* Limit the width */
+  max-width: 300px;
+  /* Limit the width */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -77,6 +84,50 @@ tr.focused * {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+
+/* Buttons */
+.buttons {
+  position: fixed;
+  bottom: 30px;
+  /* distance to the parent box, 30px far from the bottom */
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* distance between items in this container */
+  caret-color: transparent;
+}
+
+.buttons>button {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s;
+}
+
+.add-btn {
+  background-color: #2c2c34;
+}
+
+.add-btn:hover {
+  background-color: #53535f;
+}
+
+.remove-btn {
+  background-color: red;
+}
+
+.remove-btn:hover {
+  background-color: darkred;
 }
 </style>
 <template>
@@ -105,10 +156,21 @@ tr.focused * {
       </tbody>
     </table>
   </div>
+  <!-- Buttons -->
+  <div class="buttons">
+    <button class="remove-btn" @click="removeTypes" v-if="hasSelectedItems">
+      <i class="bi bi-trash-fill"></i>
+    </button>
+    <button class="add-btn" @click="clickAddBtn"><i class="bi bi-plus"></i></button>
+  </div>
+  <!-- Add Type Modal -->
+  <AddTypeModal v-model:isVisible="isModalVisible" @postAddTypeRequest="postAddTypeRequest">
+  </AddTypeModal>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
 import { typeService } from '@/services/api.js'
+import AddTypeModal from '@/components/AddTypeModal.vue'
 
 // get data
 const types = ref([])
@@ -161,6 +223,28 @@ const showNotification = (status, message) => {
     notificationType.value = ''
   }, 2000)
 }
+
+// create
+const isModalVisible = ref(false)
+
+// Methods to handle button actions
+const clickAddBtn = () => {
+  isModalVisible.value = true
+}
+
+const postAddTypeRequest = async (type) => {
+  const status = await typeService.createType(type)
+  // update current page's data immediately
+  getTypes()
+
+  // show notification
+  if (status === 200) {
+    showNotification('success', 'created successfully')
+  } else {
+    showNotification('fail', 'failed to create')
+  }
+}
+
 // mounted
 onMounted(() => {
   getTypes()

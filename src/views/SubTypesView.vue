@@ -1,4 +1,9 @@
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
 .table-container {
   width: 50%;
   margin: 2rem;
@@ -54,6 +59,7 @@ tr.focused * {
   color: #3c3d4a;
 }
 
+/* Notification */
 .notification {
   padding: 10px;
   margin: 10px;
@@ -65,7 +71,6 @@ tr.focused * {
   left: 50%;
   max-width: 300px;
   /* Limit the width */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .notification.success {
@@ -80,9 +85,8 @@ tr.focused * {
   border: 1px solid #f5c6cb;
 }
 
-/* Below are different from typesview */
+/* Select and Options */
 select {
-  text-align: center;
   background-color: transparent;
   border-radius: 4px;
   border: 1px solid #ddd;
@@ -93,6 +97,7 @@ select {
   padding: 4px;
   color: white;
   appearance: none;
+  text-align: center;
 }
 
 option {
@@ -107,51 +112,138 @@ select:focus {
   border-bottom: 1px solid #3c3d4a;
   color: #3c3d4a;
 }
+
+/* Buttons */
+.type-header-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+}
+
+.header-btn {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  font-size: 15px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s;
+  position: absolute;
+  right: 0;
+  top: -2px;
+}
+
+.buttons {
+  position: fixed;
+  bottom: 30px;
+  /* distance to the parent box, 30px far from the bottom */
+  right: 30px;
+  /* distance to the parent box, 30px far from the bottom */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* distance between items in this container */
+  caret-color: transparent;
+}
+
+.buttons>button {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s;
+}
+
+.add-btn {
+  background-color: #2c2c34;
+}
+
+.add-btn:hover {
+  background-color: #53535f;
+}
+
+.remove-btn {
+  background-color: red;
+}
+
+.remove-btn:hover {
+  background-color: darkred;
+}
 </style>
 <template>
-  <div class="table-container">
+  <div class="container">
+
+
     <!-- Notification -->
     <div v-if="notificationMessage" :class="['notification', notificationType]">
       {{ notificationMessage }}
     </div>
-    <!-- Display Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>Subtype</th>
-          <th>Belong to</th>
-          <th># of Items</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="subtype in subtypes" :key="subtype.id" :class="{ focused: focusStatus === subtype.id }">
-          <td @click="beforeUpdate(subtype.id, 'name')">
-            <input type="text" v-model="subtype.name" @blur="update(subtype.id, 'name', subtype.name)" />
-          </td>
-          <td @click="beforeUpdate(subtype.id, 'type_id')">
-            <select v-model="subtype.type_id" @change="update(subtype.id, 'type_id', $event.target.value)">
-              <option v-for="type in types" :value="type.id" :key="type.id">
-                {{ type.name }}
-              </option>
-            </select>
-          </td>
-          <td>{{ subtype.sumItemsQuantity }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Table -->
+    <div class="table-container">
+      <!-- Display Table -->
+      <table>
+        <thead>
+          <tr>
+            <th>Subtype</th>
+            <th>Belong to</th>
+            <th># of Items</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="subtype in subTypes" :key="subtype.id" :class="{ focused: focusStatus === subtype.id }">
+            <td @click="beforeUpdate(subtype.id, 'name')">
+              <input type="text" v-model="subtype.name" @blur="update(subtype.id, 'name', subtype.name)" />
+            </td>
+            <td @click="beforeUpdate(subtype.id, 'type_id')">
+              <select v-model="subtype.type_id" @change="update(subtype.id, 'type_id', $event.target.value)">
+                <option v-for="type in types" :value="type.id" :key="type.id">
+                  {{ type.name }}
+                </option>
+              </select>
+            </td>
+            <td>{{ subtype.sumItemsQuantity }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Buttons -->
+    <div class="buttons">
+      <button class="remove-btn" @click="removeSubTypes" v-if="hasSelectedSubTypes">
+        <i class="bi bi-trash-fill"></i>
+      </button>
+      <button class="add-btn" @click="clickAddBtn"><i class="bi bi-plus"></i></button>
+    </div>
+    <!-- Add Item Modal -->
+    <AddSubTypeModal v-model:isVisible="isModalVisible" :types="types" :subTypes="subTypes"
+      @postAddSubTypeRequest="postAddSubTypeRequest">
+    </AddSubTypeModal>
   </div>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
 import { subTypeService, typeService } from '@/services/api.js'
+import AddSubTypeModal from '@/components/AddSubTypeModal.vue';
 
 // get data
-const subtypes = ref([])
+const subTypes = ref([])
 const types = ref([])
 
 const getSubTypes = async () => {
-  subtypes.value = await subTypeService.getSubTypesWithCount()
-  // console.log('fetched subtypes', subtypes.value)
+  subTypes.value = await subTypeService.getSubTypesWithCount()
+  console.log('fetched subtypes', subTypes.value)
 }
 
 const getTypes = async () => {
@@ -205,6 +297,28 @@ const showNotification = (status, message) => {
     notificationMessage.value = ''
     notificationType.value = ''
   }, 2000)
+}
+
+//create
+const isModalVisible = ref(false)
+
+// Methods to handle button actions
+const clickAddBtn = () => {
+  isModalVisible.value = true
+}
+
+const postAddSubTypeRequest = async (subType) => {
+  console.log(subType)
+  const status = await subTypeService.createSubType(subType)
+  // update current page's data immediately
+  getSubTypes()
+
+  // show notification
+  if (status === 200) {
+    showNotification('success', 'created successfully')
+  } else {
+    showNotification('fail', 'failed to create')
+  }
 }
 // mounted
 onMounted(() => {

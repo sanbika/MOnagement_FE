@@ -12,7 +12,7 @@
 }
 
 .modal-content {
-  background: #ffffff;
+  background: #3c3d4a;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -24,7 +24,7 @@
 .modal-content h2 {
   margin: 0 0 20px;
   font-size: 1.5rem;
-  color: #333;
+  color: white;
 }
 
 .form-group {
@@ -35,10 +35,11 @@
   display: block;
   margin-bottom: 5px;
   font-weight: 500;
-  color: #555;
+  color: white;
 }
 
-.form-group input {
+.form-group>input,
+.form-group>select {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
@@ -66,16 +67,25 @@
   padding: 10px 20px;
   font-size: 1rem;
   cursor: pointer;
+  color: white;
   transition: background-color 0.3s ease;
 }
 
 .submit-btn {
-  background-color: green;
-  color: white;
+  background-color: #2c2c34;
+
 }
 
 .submit-btn:hover {
-  background-color: darkgreen;
+  background-color: #53535f;
+}
+
+.cancel-btn {
+  background-color: red;
+}
+
+.cancel-btn:hover {
+  background-color: darkred;
 }
 </style>
 
@@ -89,7 +99,7 @@
           <input v-model="typeName" id="typeName" type="text" required />
         </div>
         <div class="form-btns">
-          <button class="submit-btn" type="submit" @click="submitForm">Add</button>
+          <button class="submit-btn" type="submit" @click="submitForm">Add type</button>
           <button class="cancel-btn" type="button" @click="closeModal">Cancel</button>
         </div>
       </form>
@@ -98,11 +108,14 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue'
+import { ref } from 'vue'
 
-defineProps({ isVisible: Boolean })
+defineProps({
+  isVisible: Boolean
+})
 
-const emit = defineEmits(['update:isVisible', 'postAddTypeRequest'])
+const emit = defineEmits(['update:isVisible', 'postAddtypeRequest'])
+
 const typeName = ref('')
 
 const submitForm = () => {
