@@ -20,9 +20,9 @@
             <th>
               <div class="type-header-container">
                 <span>Subtype</span>
-                <button class="add-btn header-btn" @click.stop="clickAddTypeBtn">
+                <!-- <button class="add-btn header-btn" @click.stop="clickAddTypeBtn">
                   <i class="bi bi-plus"></i>
-                </button>
+                </button> -->
               </div>
             </th>
             <th>Exp. Date</th>
