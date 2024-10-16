@@ -13,20 +13,31 @@
       <table>
         <thead>
           <tr>
-            <th><input type="checkbox" v-model="selectAll"></th>
+            <th><input type="checkbox" v-model="selectAll" /></th>
             <th>Subtype</th>
             <th>Belong to</th>
             <th># of Items</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="subtype in subTypes" :key="subtype.id" :class="{ focused: focusStatus === subtype.id }">
-            <td><input type="checkbox" v-model="selectedIds" :value="subtype.id"></td>
+          <tr
+            v-for="subtype in subTypes"
+            :key="subtype.id"
+            :class="{ focused: focusStatus === subtype.id }"
+          >
+            <td><input type="checkbox" v-model="selectedIds" :value="subtype.id" /></td>
             <td @click="beforeUpdate(subtype.id, 'name')">
-              <input type="text" v-model="subtype.name" @blur="update(subtype.id, 'name', subtype.name)" />
+              <input
+                type="text"
+                v-model="subtype.name"
+                @blur="update(subtype.id, 'name', subtype.name)"
+              />
             </td>
             <td @click="beforeUpdate(subtype.id, 'type_id')">
-              <select v-model="subtype.type_id" @change="update(subtype.id, 'type_id', $event.target.value)">
+              <select
+                v-model="subtype.type_id"
+                @change="update(subtype.id, 'type_id', $event.target.value)"
+              >
                 <option v-for="type in types" :value="type.id" :key="type.id">
                   {{ type.name }}
                 </option>
@@ -45,15 +56,19 @@
       <button class="add-btn" @click="clickAddBtn"><i class="bi bi-plus"></i></button>
     </div>
     <!-- Add Item Modal -->
-    <AddSubTypeModal v-model:isVisible="isModalVisible" :types="types" :subTypes="subTypes"
-      @postAddSubTypeRequest="postAddSubTypeRequest">
+    <AddSubTypeModal
+      v-model:isVisible="isModalVisible"
+      :types="types"
+      :subTypes="subTypes"
+      @postAddSubTypeRequest="postAddSubTypeRequest"
+    >
     </AddSubTypeModal>
   </div>
 </template>
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { subTypeService, typeService } from '@/services/api.js'
-import AddSubTypeModal from '@/components/AddSubTypeModal.vue';
+import AddSubTypeModal from '@/components/AddSubTypeModal.vue'
 
 // get data
 const subTypes = ref([])
@@ -75,7 +90,7 @@ const focusStatus = ref('') // td focus styles
 
 const beforeUpdate = (id, field) => {
   console.log('id is ', id, 'field is ', field)
-  oldValue = subtypes.value.filter((type) => type.id === id)[0][field]
+  oldValue = subTypes.value.filter((type) => type.id === id)[0][field]
   console.log('old Value is ', oldValue)
   focusStatus.value = id
 }
