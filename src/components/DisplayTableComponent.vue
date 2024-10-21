@@ -19,7 +19,7 @@
             <td
               v-for="(head, headIndex) in heads"
               :key="headIndex"
-              @click="beforeUpdate(row.id, fieldMap[head])"
+              @click="beforeUpdate(row.id, head)"
             >
               <!-- Editable check -->
               <template v-if="editableHeads.includes(head)">
@@ -29,7 +29,7 @@
                   v-if="headConfig[head] === 'text'"
                   v-model="row[fieldMap[head]]"
                   type="text"
-                  @blur="emitUpdate(row.id, head, row[fieldMap[head]])"
+                  @blur="emitUpdate(row.id, fieldMap[head], row[fieldMap[head]])"
                 />
                 <!-- select -->
                 <select
@@ -46,7 +46,7 @@
                 <!-- date -->
                 <input
                   ref="dateTag"
-                  v-if="headConfig[head] === 'date'"
+                  v-if="headConfig[head] == 'date'"
                   v-model="row[fieldMap[head]]"
                   type="date"
                   @blur="emitUpdate(row.id, fieldMap[head], $event.target.value)"
@@ -56,7 +56,7 @@
                   v-if="headConfig[head] === 'number'"
                   v-model="row[fieldMap[head]]"
                   type="number"
-                  @blur="emitUpdate(row.id, fieldMap[head], row[head])"
+                  @blur="emitUpdate(row.id, fieldMap[head], $event.target.value)"
                 />
               </template>
               <span v-else>{{ row[fieldMap[head]] }}</span>
@@ -93,12 +93,19 @@ let selectTag = ref('')
 
 const beforeUpdate = (id, field) => {
   // console.log(isReactive(props.rows))
+
   // no need to use "props.rows.value" as rows here is "reactive" instead of "ref"
-  oldValue = props.rows.filter((row) => row.id === id)[0][field]
-  // console.log(oldValue)
+  oldValue = props.rows.filter((row) => row.id === id)[0] // corresponding row data
+  oldValue = oldValue[props.fieldMap[field]] // coresponding field value of the row
+
+  // console.log('oldValue in beforeUpdate', oldValue)
+  // console.log('field in beforeUpdate', field)
+
   // e.g. item['type'] = {id:, name:,}, but only need to pass id to api
   if (props.headConfig[field] === 'select') {
     oldValue = oldValue.id
+
+    // console.log('oldValue in beforeUpdate in select condition', oldValue)
 
     // nextTick is called when DOM has updated
     nextTick(() => {
@@ -122,9 +129,14 @@ const emitCreate = () => {
 }
 
 const emitUpdate = (id, field, newValue) => {
-  // only emit when the value has changed
-  // oldValue is recorded in beforeUpdate
-  if (oldValue !== newValue) {
+  // console.log('oldValue in emitUpdate', oldValue)
+  // console.log('newValue in emitUpdate', newValue)
+  // console.log('type of oldValue', typeof oldValue)
+  // console.log('type of newValue', typeof newValue)
+
+  // only emit when the value has changed, oldValue is recorded in beforeUpdate, here uses != because the type of them is different but we only care about value
+  if (oldValue != newValue) {
+    // console.log('oldValue not equal to newValue, emit')
     emit(`update`, id, field, newValue)
   }
 }
@@ -145,5 +157,6 @@ const hasSelected = computed(() => selectedIds.value.length > 0)
 
 const emitDelete = () => {
   emit(`delete`, selectedIds.value)
+  selectedIds.value = []
 }
 </script>
