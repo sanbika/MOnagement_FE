@@ -68,31 +68,6 @@ tr.focused .header-btn > i {
   color: white;
 }
 
-.notification {
-  padding: 10px;
-  margin: 10px;
-  border-radius: 4px;
-  font-weight: bold;
-  text-align: center;
-  position: fixed;
-  top: 10px;
-  left: 50%;
-  max-width: 300px;
-  /* Limit the width */
-}
-
-.notification.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.notification.fail {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
 /* Select and Options */
 select {
   background-color: transparent;
