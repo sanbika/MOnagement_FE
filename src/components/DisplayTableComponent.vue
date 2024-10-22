@@ -14,7 +14,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in rows" :key="row.id">
+          <tr v-for="row in rows" :key="row.id" :class="{ focused: focusId === row.id }">
             <td><input type="checkbox" :value="row.id" v-model="selectedIds" /></td>
             <td
               v-for="(head, headIndex) in heads"
@@ -87,38 +87,51 @@ const props = defineProps({
   options: Object // options for select fields
 })
 
+let focusId = ref(null) // current editing row
+let focusFiled = ref(null) // current editing field
+
 let oldValue // record value before update
-let dateTag = ref('') //
+let dateTag = ref('')
 let selectTag = ref('')
 
+const selectOpen = ref(false)
+
 const beforeUpdate = (id, field) => {
+  // if (selectOpen.value) return
+  // if (Object.values(selectTag.value).includes(event.target)) selectOpen.value = true
   // console.log(isReactive(props.rows))
 
-  // no need to use "props.rows.value" as rows here is "reactive" instead of "ref"
-  oldValue = props.rows.filter((row) => row.id === id)[0] // corresponding row data
-  oldValue = oldValue[props.fieldMap[field]] // coresponding field value of the row
+  //  If user click the same row and the same field many times during one focused event, only recording the old value at the first click time
+  if (!focusId.value && !focusFiled.value) {
+    focusId.value = id // current editing row (control (1)style; (2)oldValue recording)
+    focusFiled.value = field // current editing field (control oldValue recording)
 
-  // console.log('oldValue in beforeUpdate', oldValue)
-  // console.log('field in beforeUpdate', field)
+    // no need to use "props.rows.value" as rows here is "reactive" instead of "ref"
+    oldValue = props.rows.filter((row) => row.id === id)[0] // corresponding row data
+    oldValue = oldValue[props.fieldMap[field]] // coresponding field value of the row
 
-  // e.g. item['type'] = {id:, name:,}, but only need to pass id to api
-  if (props.headConfig[field] === 'select') {
-    oldValue = oldValue.id
+    console.log('oldValue in beforeUpdate', oldValue)
+    // console.log('field in beforeUpdate', field)
 
-    // console.log('oldValue in beforeUpdate in select condition', oldValue)
+    // e.g. item['type'] = {id:, name:,}, but only need to pass id to api
+    if (props.headConfig[field] === 'select') {
+      oldValue = oldValue.id
 
-    // nextTick is called when DOM has updated
-    nextTick(() => {
-      selectTag.value[0].focus()
-    })
-  }
+      console.log('oldValue in beforeUpdate in select condition', oldValue)
 
-  if (props.headConfig[field] === 'date') {
-    // dateTag.value is an array with only 1 element (if use v-show, the array will have the same length of items list)
-    // nextTick is called when DOM has updated
-    nextTick(() => {
-      dateTag.value[0].focus()
-    })
+      // nextTick is called when DOM has updated
+      nextTick(() => {
+        selectTag.value[0].focus()
+      })
+    }
+
+    if (props.headConfig[field] === 'date') {
+      // dateTag.value is an array with only 1 element (if use v-show, the array will have the same length of items list)
+      // nextTick is called when DOM has updated
+      nextTick(() => {
+        dateTag.value[0].focus()
+      })
+    }
   }
 }
 
@@ -129,8 +142,9 @@ const emitCreate = () => {
 }
 
 const emitUpdate = (id, field, newValue) => {
-  // console.log('oldValue in emitUpdate', oldValue)
-  // console.log('newValue in emitUpdate', newValue)
+  selectOpen.value = false
+  console.log('oldValue in emitUpdate', oldValue)
+  console.log('newValue in emitUpdate', newValue)
   // console.log('type of oldValue', typeof oldValue)
   // console.log('type of newValue', typeof newValue)
 
@@ -139,6 +153,10 @@ const emitUpdate = (id, field, newValue) => {
     // console.log('oldValue not equal to newValue, emit')
     emit(`update`, id, field, newValue)
   }
+
+  // restore focused row and field to null
+  focusId.value = null
+  focusFiled.value = null
 }
 
 // process selectAll
