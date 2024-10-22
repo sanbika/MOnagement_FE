@@ -19,9 +19,7 @@ const router = createRouter({
       path: '/subtypes',
       name: 'subtypes',
       component: () => import('@/views/SubTypesView.vue')
-    },
-
-    { path: '/test', name: 'test', component: () => import('@/views/TestView.vue') }
+    }
   ]
 })
 
