@@ -22,13 +22,20 @@
     @delete="deleteTypes"
   />
   <!-- Add Type Modal -->
-  <AddTypeModal v-model:isVisible="isModalVisible" @postAddTypeRequest="createType"> </AddTypeModal>
+  <AddModal
+    v-model:isVisible="isModalVisible"
+    @emitAddRequest="createType"
+    :title="'Add a New Type'"
+    :fields="['name']"
+    :field-display="{ name: 'Name' }"
+    :field-config="{ name: 'text' }"
+  ></AddModal>
 </template>
 <script setup>
 import DisplayTableComponent from '@/components/DisplayTableComponent.vue'
-import AddTypeModal from '@/components/AddTypeModal.vue'
 import { ref, onMounted } from 'vue'
 import { typeService } from '@/services/api.js'
+import AddModal from '@/components/AddModal.vue'
 
 // get data
 const types = ref([])

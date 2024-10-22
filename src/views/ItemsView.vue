@@ -24,16 +24,30 @@
     @delete="deleteItems"
   />
   <!-- Add Item Modal -->
-  <AddItemModal
+  <AddModal
     v-model:isVisible="isModalVisible"
-    :types="subTypes"
-    @postAddItemRequest="createItem"
-  >
-  </AddItemModal>
+    :options="subTypes"
+    :title="'Add a New Item'"
+    :fields="['name', 'subType', 'expiryDate', 'quantity']"
+    :field-display="{
+      name: 'Item Name',
+      subType: 'Item SubType',
+      expiryDate: 'Expiry Date',
+      quantity: 'Quantity'
+    }"
+    :field-config="{
+      name: 'text',
+      subType: 'select',
+      expiryDate: 'date',
+      quantity: 'number'
+    }"
+    @emitAddRequest="createItem"
+  ></AddModal>
 </template>
 <script setup>
 import DisplayTableComponent from '@/components/DisplayTableComponent.vue'
-import AddItemModal from '@/components/AddItemModal.vue'
+// import AddItemModal from '@/components/AddItemModal.vue'
+import AddModal from '@/components/AddModal.vue'
 import { ref, onMounted } from 'vue'
 import { itemService, subTypeService } from '@/services/api.js'
 

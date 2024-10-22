@@ -23,17 +23,19 @@
     @delete="deleteSubTypes"
   />
   <!-- Add SubType Modal -->
-  <AddSubTypeModal
+  <AddModal
     v-model:isVisible="isModalVisible"
-    :types="types"
-    :subTypes="subTypes"
-    @postAddSubTypeRequest="createSubType"
-  >
-  </AddSubTypeModal>
+    @emitAddRequest="createSubType"
+    :title="'Add a New Subtype'"
+    :options="types"
+    :fields="['name', 'type']"
+    :field-display="{ name: 'Name', type: 'Type' }"
+    :field-config="{ name: 'text', type: 'select' }"
+  ></AddModal>
 </template>
 <script setup>
 import DisplayTableComponent from '@/components/DisplayTableComponent.vue'
-import AddSubTypeModal from '@/components/AddSubTypeModal.vue'
+import AddModal from '@/components/AddModal.vue'
 import { ref, onMounted } from 'vue'
 import { subTypeService, typeService } from '@/services/api.js'
 
