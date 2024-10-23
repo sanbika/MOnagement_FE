@@ -33,3 +33,6 @@ vitest.config.js
 *.sw?
 
 *.tsbuildinfo
+
+# compressed built file
+*.zip
